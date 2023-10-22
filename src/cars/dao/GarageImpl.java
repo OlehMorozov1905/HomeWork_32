@@ -1,7 +1,8 @@
 package cars.dao;
 
-import cars.dao.Garage;
 import cars.model.Car;
+
+import java.util.function.Predicate;
 
 public class GarageImpl implements Garage {
     private Car[] cars;
@@ -46,73 +47,47 @@ public class GarageImpl implements Garage {
         return null;
     }
 
-    @Override
-    public Car[] findCarsByModel(String model) {
+
+    private Car[] filterCars(Predicate<Car> predicate) {
         int count = 0;
         for (int i = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getModel().equals(model)) {
+            if (predicate.test(cars[i])) {
                 count++;
             }
         }
         Car[] result = new Car[count];
         for (int i = 0, j = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getModel().equals(model)) {
+            if (predicate.test(cars[i])) {
                 result[j++] = cars[i];
             }
         }
         return result;
+    }
+    @Override
+    public Car[] findCarsByModel(String model) {
+        Predicate<Car> byModel = car -> car != null && car.getModel().equals(model);
+        return filterCars(byModel);
     }
 
     @Override
     public Car[] findCarsByCompany(String company) {
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getCompany().equals(company)) {
-                count++;
-            }
-        }
-        Car[] result = new Car[count];
-        for (int i = 0, j = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getCompany().equals(company)) {
-                result[j++] = cars[i];
-            }
-        }
-        return result;
+        Predicate<Car> byCompany = car -> car != null && car.getCompany().equals(company);
+        return filterCars(byCompany);
     }
 
     @Override
     public Car[] findCarsByEngine(double min, double max) {
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getEngine() >= min && cars[i].getEngine() <= max) {
-                count++;
-            }
-        }
-        Car[] result = new Car[count];
-        for (int i = 0, j = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getEngine() >= min && cars[i].getEngine() <= max) {
-                result[j++] = cars[i];
-            }
-        }
-        return result;
+        Predicate<Car> byEngine = car -> car != null && car.getEngine() >= min && car.getEngine() <= max;
+        return filterCars(byEngine);
     }
+
 
     @Override
     public Car[] findCarsByColor(String color) {
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getColor().equals(color)) {
-                count++;
-            }
-        }
-        Car[] result = new Car[count];
-        for (int i = 0, j = 0; i < size; i++) {
-            if (cars[i] != null && cars[i].getColor().equals(color)) {
-                result[j++] = cars[i];
-            }
-        }
-        return result;
+        Predicate<Car> byColor = car -> car != null && car.getColor().equals(color);
+        return filterCars(byColor);
     }
+
 
     @Override
     public int quantity() {
